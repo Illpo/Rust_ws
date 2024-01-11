@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat Page</title>
+  <style>
+    /* Track */
+    ::-webkit-scrollbar {
+      width: 5px;
+      right: 2px;
+    }
+    ::-webkit-scrollbar:hover {
+      width: 8px;
+      right: 3px;
+    }
+
+    /* Handle */
+    ::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 5px;
+    }
+
+    /* Handle on hover */
+    ::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    ::-webkit-scrollbar-track {
+      display: none;
+    }
+
+    /* Basic styling for demonstration purposes */
+    body, html {
+      overflow: hidden;
+      overflow-y: overlay;
+      font-family: Verdana, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      overflow-y: overlay;
+      width: 100%;
+      height: 100%;
+      align-content: center;
+      align-items: center;
+      justify-content: center;
+    }
+    header {
+      margin-bottom: 20px;
+    }
+    .chat-container {
+      height: 90%;
+      max-width: 600px;
+      margin: 0 auto;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .chat-messages {
+      min-height: 75%;
+      max-height: 72%;
+      list-style-type: none;
+      margin: 0;
+      padding: 20px;
+      overflow-y: auto;
+    }
+    
+    
+    .message {
+      
+      justify-content: center;
+      clear: right, left;
+      background-color: #f9f9f9;
+      border-radius: 15px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      margin-left: 15px;
+      max-width: 90%;
+      word-wrap: break-word; 
+    }
+
+    .liconteiner-user{
+      clear: left;
+    }
+    .liconteiner-dude{
+      clear: right;
+    }
+    .user-message {
+      
+      background-color: #e2f0cb;
+      padding: 5px;
+      float: right;
+      clear: right;
+    }
+    .dude-message {
+      
+      background-color: #F59F74;
+      padding: 5px;
+      float: left;
+      clear: left;
+    }
+    .message input[type="text"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      border-radius: 25px;
+      border: 1px solid #ccc;
+      margin: 0;
+      outline: none;
+      font-size: 14px;
+    }
+    .message input[type="submit"] {
+      width: 60px;
+      padding: 10px;
+      border-radius: 25px;
+      border: none;
+      background-color: #4CAF50;
+      color: white;
+      cursor: pointer;
+      margin-top: 5px;
+      font-size: 14px;
+    }
+    .message input[type="file"] {
+      display: none;
+      width: 60px;
+      padding: 10px;
+      border-radius: 25px;
+      border: none;
+      background-color: #4CAF00;
+      color: white;
+      cursor: pointer;
+      opacity: 0;
+      font-size: 14px;
+    }
+    @media screen and (max-width:395px) {
+      .chat-container {
+        width: 90%;
+      }
+      .message input[type="text"] {
+        width: calc(100% - 25px);
+      }     
+    }
+
+    @media screen and (min-width:395px) and (max-width:725px) {
+      .chat-container {
+        width: 90%;
+      }
+    }
+
+    @media screen and (min-width:725px) and (max-width: 1000px) {
+      .chat-container { 
+        width: 90%;
+      } 
+    }
+    .file-input-container {
+      top: 5px;
+      overflow: hidden;
+     
+    }
+
+    label {
+      
+      padding: 10px 15px;
+      background-color: #3498db;
+      color: #fff;
+      cursor: pointer;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+  </header>
+  <div class="chat-container">
+    <ul class="chat-messages" id="chat-messages">
+      <!-- Chat messages will be displayed here -->
+    </ul>
+    <div class="message">
+      <input type="text" id="message-input" placeholder="Type your message...">
+      <input type="submit" value="Send" onclick="sendMessage()">
+    </div>
+
+  </div>
+
+  <script>
+
+    const socket = new WebSocket('ws://192.168.33.13:81/'); // Replace with your server's WebSocket URL
+    function establishWebSocketConnection() {
+      // Event listeners for WebSocket events
+      socket.onopen = () => {
+        console.log('WebSocket connection established.');
+
+        socket.send("New chater connected");
+      };
+
+      socket.onmessage = (event) => {
+        const receivedMessage = event.data;
+        readMessage(receivedMessage)
+      };
+
+      socket.onclose = () => {
+        console.log('WebSocket connection closed.');
+      };
+
+      socket.onerror = (error) => {
+        console.error('WebSocket error:', error);
+      };
+    }
+
+    function readMessage(receivedMessage) {
+
+      if (receivedMessage.trim() !== '') {
+
+        const chatMessages = document.getElementById('chat-messages');
+        const divv = document.createElement('div');
+        const newMessage = document.createElement('li');
+        divv.classList.add('liconteiner-dude');
+        newMessage.classList.add('message', 'dude-message');
+        newMessage.textContent = receivedMessage;
+        divv.appendChild(newMessage);
+        chatMessages.appendChild(divv);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+      }
+    }
+
+
+    function sendMessage() {
+
+      const messageInput = document.getElementById('message-input');
+      const message = messageInput.value;
+
+      if (message.trim() !== '') {
+
+        socket.send(message);
+        const chatMessages = document.getElementById('chat-messages');
+        const divv = document.createElement('div');
+        const newMessage = document.createElement('li');
+        divv.classList.add('liconteiner-user');
+        newMessage.classList.add('message', 'user-message');
+        newMessage.textContent = message;
+        divv.appendChild(newMessage);
+        chatMessages.appendChild(divv);
+
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+
+        messageInput.value = '';
+      }
+    }
+
+    window.onload = () => {
+      establishWebSocketConnection();
+    }
+  </script>
+
+</body>
+</html>
