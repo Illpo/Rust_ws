@@ -8,8 +8,8 @@ use futures_util::{StreamExt, SinkExt};
 
 #[tokio::main]
 async fn main() {
-    let listener = TcpListener::bind("192.168.33.13:81").await.expect("Faild to creat a socket!");
-    println!("┌──Server running...\n└─» ws:...:81\n ┌───┐  ┌───┐\n | ▀▄▀  ▀▄▀ |\n └───┘  └───┘");
+    let listener = TcpListener::bind("localhost:1234").await.expect("Faild to creat a socket!");
+    println!("┌──Server running...\n└─» ws:...:1234\n ┌───┐  ┌───┐\n | ▀▄▀  ▀▄▀ |\n └───┘  └───┘");
     let (tx, rx) = broadcast::channel(10);
     loop {
         if let Ok((mut socket, addr)) = listener.accept().await {
