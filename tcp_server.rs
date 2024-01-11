@@ -51,8 +51,6 @@ async fn main() {
                             }
                             "/register" => {
                             }
-                            "/message" => {
-                            }
                             _ => {
                                 println!("Ooops");
                             }
