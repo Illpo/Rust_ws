@@ -1,5 +1,6 @@
 mod files;
 
+use std::env;
 use tokio::net::TcpListener;
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 
@@ -7,6 +8,9 @@ use files::{serve, serve_static, login, register};
 
 #[tokio::main]
 async fn main() {
+    
+    //let args: Vec<String> = env.args().collect();
+    
     let listener = TcpListener::bind("localhost:80").await.expect("Faild creat a socket!");
     println!("┌──Server running...\n└─» Go to localhost\n ┌───┐  ┌───┐\n | ▀▄▀  ▀▄▀ |\n └───┘  └───┘");
 
