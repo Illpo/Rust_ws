@@ -60,33 +60,23 @@ pub async fn login(cookie: String, mut socket: TcpStream) {
 }
 
 pub async fn serve_static(url: &str, mut socket: TcpStream)  {
-    let mut stut = false;
-
-        if url.starts_with("/static") || url.starts_with("/favicon") {
-            let file = &mut url.to_string();
-            file.remove(0);
-            let content_type = handle_type(file);
-            match fs::read(file) {
-                Ok(file) => {
-                    let form = format!("HTTP/1.1 200 OK\r\nContent-Type: {}\r\nConnection: close\r\nCache-Control: max-age=2\r\nContent-Length: {}\r\n\r\n", content_type, file.len());
-                    println!("{}", form);
-                    _ = socket.write(&form.as_bytes()).await;
-                    _ = socket.write(&file).await;
-                }
-                Err(e) => {
-                    let error_response = format!("HTTP/1.1 500 Server Error No No\r\nConnection: close\r\n\r\n{}", e);
-                    println!("{}", error_response);
-                    _ = socket.write(error_response.as_bytes()).await;
-                }
+    if url.starts_with("/static") || url.starts_with("/favicon") {
+        let file = &mut url.to_string();
+        file.remove(0);
+        let content_type = handle_type(file);
+        match fs::read(file) {
+            Ok(file) => {
+                let form = format!("HTTP/1.1 200 OK\r\nContent-Type: {}\r\nConnection: close\r\nCache-Control: max-age=2\r\nContent-Length: {}\r\n\r\n", content_type, file.len());
+                println!("{}", form);
+                _ = socket.write(&form.as_bytes()).await;
+                _ = socket.write(&file).await;
             }
-            stut = true; 
+            Err(e) => {
+                let error_response = format!("HTTP/1.1 500 Server Error No No\r\nConnection: close\r\n\r\n{}", e);
+                println!("{}", error_response);
+                _ = socket.write(error_response.as_bytes()).await;
+            }
         }
-        
-    if !stut {
-        let error_response = format!("HTTP/1.1 500 Server Error 0_0\r\nConnection: close\r\n\r\n");
-        let msg = String::from("<h1>Nooo, bad</h1> <a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\"><h1>Here</h1></a>");
-        println!("{}", error_response);
-        _ = socket.write(error_response.as_bytes()).await;
-        _ = socket.write(msg.as_bytes()).await;
     }
 }
+
